@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CapybaraAI | Practical AI Automation for Houston SMBs</title>
+    <meta name="description" content="CapybaraAI helps Houston small and midsize businesses automate lead response, customer service, and back-office workflows with practical AI systems.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #f6f0e7;
+            --bg-alt: #efe5d6;
+            --surface: rgba(255, 252, 246, 0.84);
+            --surface-strong: #fffaf2;
+            --text: #1f2937;
+            --muted: #5b6472;
+            --line: rgba(113, 89, 57, 0.18);
+            --accent: #9f4f2b;
+            --accent-dark: #7f3f23;
+            --accent-soft: #f2dfd1;
+            --olive: #59654b;
+            --teal: #2f6f6c;
+            --shadow: 0 20px 60px rgba(68, 47, 29, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Manrope", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(159, 79, 43, 0.12), transparent 32%),
+                radial-gradient(circle at top right, rgba(89, 101, 75, 0.12), transparent 28%),
+                linear-gradient(180deg, #f8f3eb 0%, #f6f0e7 38%, #f2eadf 100%);
+        }
+
+        h1, h2, h3, h4 {
+            font-family: "Fraunces", serif;
+            letter-spacing: -0.03em;
+        }
+
+        .site-shell {
+            position: relative;
+            overflow-x: clip;
+        }
+
+        .grain {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.18;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+            mask-image: radial-gradient(circle at center, black, transparent 78%);
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .soft-card {
+            background: rgba(255, 250, 242, 0.92);
+            border: 1px solid rgba(113, 89, 57, 0.12);
+            box-shadow: 0 10px 30px rgba(68, 47, 29, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .soft-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 34px rgba(68, 47, 29, 0.12);
+            border-color: rgba(159, 79, 43, 0.28);
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, #b9673e 100%);
+            color: #fff7f1;
+            box-shadow: 0 14px 30px rgba(159, 79, 43, 0.22);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 34px rgba(159, 79, 43, 0.28);
+            opacity: 0.98;
+        }
+
+        .secondary-btn {
+            background: rgba(255, 250, 242, 0.88);
+            border: 1px solid rgba(113, 89, 57, 0.2);
+            color: var(--text);
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.96);
+            transform: translateY(-1px);
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            background: rgba(255, 250, 242, 0.88);
+            border: 1px solid rgba(113, 89, 57, 0.14);
+            color: var(--accent-dark);
+            font-size: 0.76rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .section-fade {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+
+        .section-fade.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero-pattern {
+            position: absolute;
+            inset: auto -8% -12% auto;
+            width: 420px;
+            height: 420px;
+            border-radius: 9999px;
+            background:
+                radial-gradient(circle at center, rgba(159, 79, 43, 0.18) 0%, rgba(159, 79, 43, 0.04) 36%, transparent 68%),
+                radial-gradient(circle at 28% 30%, rgba(89, 101, 75, 0.18), transparent 38%);
+            filter: blur(6px);
+            pointer-events: none;
+        }
+
+        .stat-divider {
+            border-color: rgba(113, 89, 57, 0.14);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .section-fade,
+            .soft-card,
+            .primary-btn,
+            .secondary-btn {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="site-shell">
+        <div class="grain"></div>
+
+        <nav class="sticky top-0 z-50 border-b border-[rgba(113,89,57,0.12)] bg-[rgba(246,240,231,0.86)] backdrop-blur-xl">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(159,79,43,0.12)] text-[var(--accent)]">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M4 14C4 14 3 13 2 13C1 13 1 15 2 15C3 15 4 16 5 17C6 18 8 19 11 19C14 19 19 18 21 16C23 14 23 10 22 8C21 6 18 5 15 5C12 5 9 6 7 8C5 10 4 12 4 14Z" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.4"/>
+                                <circle cx="17" cy="9" r="1" fill="currentColor"/>
+                                <path d="M7 19L6 21M17 19L18 21" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-lg font-extrabold tracking-tight">CapybaraAI</div>
+                            <div class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Houston AI Automation</div>
+                        </div>
+                    </div>
+
+                    <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-[var(--muted)]">
+                        <a href="#services" class="hover:text-[var(--accent)] transition">Services</a>
+                        <a href="#industries" class="hover:text-[var(--accent)] transition">Who We Help</a>
+                        <a href="#process" class="hover:text-[var(--accent)] transition">How It Works</a>
+                        <a href="#team" class="hover:text-[var(--accent)] transition">Team</a>
+                        <a href="#contact" class="text-[var(--accent)]">Free Audit</a>
+                    </div>
+
+                    <button id="mobile-menu-button" class="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(113,89,57,0.16)] bg-[rgba(255,250,242,0.9)] text-[var(--text)]" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu">
+                        <i data-lucide="menu" class="h-5 w-5"></i>
+                    </button>
+                </div>
+
+                <div id="mobile-menu" class="hidden md:hidden border-t border-[rgba(113,89,57,0.12)] py-4">
+                    <div class="flex flex-col gap-3 text-sm font-semibold text-[var(--muted)]">
+                        <a href="#services" class="py-1">Services</a>
+                        <a href="#industries" class="py-1">Who We Help</a>
+                        <a href="#process" class="py-1">How It Works</a>
+                        <a href="#team" class="py-1">Team</a>
+                        <a href="#contact" class="py-1 text-[var(--accent)]">Free Audit</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <section class="relative px-4 pt-16 pb-20 md:pt-24 md:pb-24">
+                <div class="hero-pattern"></div>
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+                        <div class="section-fade is-visible">
+                            <div class="eyebrow mb-6">
+                                <span>Serving Houston SMBs</span>
+                            </div>
+                            <h1 class="max-w-4xl text-5xl md:text-7xl leading-[0.95] text-[var(--text)]">
+                                Practical AI systems for businesses that need more follow-up, less busywork, and faster customer response.
+                            </h1>
+                            <p class="mt-6 max-w-2xl text-lg md:text-xl leading-relaxed text-[var(--muted)]">
+                                We help local service businesses turn missed calls, repetitive admin work, and slow operations into reliable automated workflows that save time and capture more revenue.
+                            </p>
+                            <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                                <a href="#contact" class="primary-btn inline-flex items-center justify-center rounded-full px-8 py-4 text-base font-bold">
+                                    Book a Free AI Opportunity Audit
+                                    <i data-lucide="arrow-right" class="ml-2 h-5 w-5"></i>
+                                </a>
+                                <a href="#process" class="secondary-btn inline-flex items-center justify-center rounded-full px-8 py-4 text-base font-bold">
+                                    See How We Work
+                                </a>
+                            </div>
+                            <div class="mt-10 grid gap-6 sm:grid-cols-3">
+                                <div>
+                                    <div class="text-3xl font-extrabold text-[var(--accent)]">30 min</div>
+                                    <div class="mt-1 text-sm text-[var(--muted)]">Focused consultation on your current bottlenecks</div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-extrabold text-[var(--olive)]">3-5 ideas</div>
+                                    <div class="mt-1 text-sm text-[var(--muted)]">Concrete automation opportunities, not vague AI talk</div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-extrabold text-[var(--teal)]">Local fit</div>
+                                    <div class="mt-1 text-sm text-[var(--muted)]">Built for small and midsize teams that need ROI quickly</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-fade">
+                            <div class="panel rounded-[2rem] p-6 md:p-8">
+                                <div class="rounded-[1.5rem] bg-[var(--surface-strong)] p-6 border border-[rgba(113,89,57,0.1)]">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent)]">Typical Outcomes</p>
+                                            <h2 class="mt-2 text-3xl">Where SMBs usually feel the win first</h2>
+                                        </div>
+                                        <div class="hidden sm:flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)]">
+                                            <i data-lucide="sparkles"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-6 space-y-4">
+                                        <div class="soft-card rounded-3xl p-5">
+                                            <div class="flex items-start gap-4">
+                                                <div class="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(159,79,43,0.12)] text-[var(--accent)]">
+                                                    <i data-lucide="phone-call" class="h-5 w-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl">Missed calls become captured leads</h3>
+                                                    <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">AI voice and messaging workflows can respond after hours, qualify requests, and push the right details into your team’s systems.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="soft-card rounded-3xl p-5">
+                                            <div class="flex items-start gap-4">
+                                                <div class="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(89,101,75,0.14)] text-[var(--olive)]">
+                                                    <i data-lucide="calendar-check-2" class="h-5 w-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl">Routine scheduling stops eating team time</h3>
+                                                    <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">Appointment requests, confirmations, reminders, and follow-ups can run automatically while your staff handles higher-value work.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="soft-card rounded-3xl p-5">
+                                            <div class="flex items-start gap-4">
+                                                <div class="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(47,111,108,0.14)] text-[var(--teal)]">
+                                                    <i data-lucide="workflow" class="h-5 w-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl">Admin workflows stop depending on manual handoffs</h3>
+                                                    <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">Form intake, CRM updates, internal routing, and status communication can move faster with fewer dropped details.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="services" class="section-fade px-4 py-20">
+                <div class="max-w-7xl mx-auto">
+                    <div class="max-w-3xl">
+                        <div class="eyebrow mb-5">What We Build</div>
+                        <h2 class="text-4xl md:text-5xl">Automation services that feel useful on day one</h2>
+                        <p class="mt-4 text-lg leading-relaxed text-[var(--muted)]">
+                            We focus on the workflows that most often create friction for local businesses: slow lead follow-up, repetitive scheduling, customer communication, and operational bottlenecks between tools.
+                        </p>
+                    </div>
+
+                    <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                        <article class="soft-card rounded-[1.75rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(159,79,43,0.12)] text-[var(--accent)]">
+                                <i data-lucide="message-square-reply"></i>
+                            </div>
+                            <h3 class="mt-5 text-2xl">Lead Response Automation</h3>
+                            <p class="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent)]">Reply sooner. Lose fewer leads.</p>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We automate the first response across forms, text, calls, and inboxes so prospects get a quick answer and your team gets cleaner intake data.</p>
+                        </article>
+
+                        <article class="soft-card rounded-[1.75rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(47,111,108,0.14)] text-[var(--teal)]">
+                                <i data-lucide="headset"></i>
+                            </div>
+                            <h3 class="mt-5 text-2xl">Customer Support & Call Flows</h3>
+                            <p class="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-[var(--teal)]">Stay responsive after hours</p>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We design AI support and voice workflows that answer common questions, route edge cases, and keep customers moving instead of waiting.</p>
+                        </article>
+
+                        <article class="soft-card rounded-[1.75rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(89,101,75,0.14)] text-[var(--olive)]">
+                                <i data-lucide="workflow"></i>
+                            </div>
+                            <h3 class="mt-5 text-2xl">Back-Office Automation</h3>
+                            <p class="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-[var(--olive)]">Less copying. Fewer bottlenecks.</p>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We remove repetitive admin work across operations, sales support, and coordination so your team spends less time pushing information around.</p>
+                        </article>
+
+                        <article class="soft-card rounded-[1.75rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(159,79,43,0.12)] text-[var(--accent)]">
+                                <i data-lucide="blocks"></i>
+                            </div>
+                            <h3 class="mt-5 text-2xl">Systems Integration</h3>
+                            <p class="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent)]">Make your tools cooperate</p>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We connect CRMs, scheduling tools, inboxes, forms, and AI systems into one practical workflow instead of adding another disconnected app.</p>
+                        </article>
+
+                        <article class="soft-card rounded-[1.75rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(47,111,108,0.14)] text-[var(--teal)]">
+                                <i data-lucide="wrench"></i>
+                            </div>
+                            <h3 class="mt-5 text-2xl">Custom AI Workflows</h3>
+                            <p class="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-[var(--teal)]">Built around your process</p>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">When off-the-shelf software cannot match the way your team works, we design a tailored workflow that fits your operation instead of forcing a rewrite.</p>
+                        </article>
+
+                        <article class="soft-card rounded-[1.75rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(89,101,75,0.14)] text-[var(--olive)]">
+                                <i data-lucide="compass"></i>
+                            </div>
+                            <h3 class="mt-5 text-2xl">AI Roadmapping</h3>
+                            <p class="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-[var(--olive)]">Start where ROI is clearest</p>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We help owners and operators choose realistic first projects, set expectations, and avoid expensive experiments with unclear value.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section id="industries" class="section-fade px-4 py-20 bg-[rgba(255,250,242,0.42)] border-y border-[rgba(113,89,57,0.1)]">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+                        <div>
+                            <div class="eyebrow mb-5">Who We Help</div>
+                            <h2 class="text-4xl md:text-5xl">A better fit for service businesses than generic AI hype</h2>
+                            <p class="mt-4 text-lg leading-relaxed text-[var(--muted)]">
+                                This version leans into the audience that usually responds best to practical automation: businesses where inquiries, appointments, and internal handoffs directly affect revenue and customer experience.
+                            </p>
+                        </div>
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div class="soft-card rounded-[1.5rem] p-6">
+                                <h3 class="text-2xl">Clinics & Healthcare Services</h3>
+                                <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">Scheduling, reminders, call routing, intake workflows, and routine communication.</p>
+                            </div>
+                            <div class="soft-card rounded-[1.5rem] p-6">
+                                <h3 class="text-2xl">Home & Field Services</h3>
+                                <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">Lead capture, dispatch coordination, estimate follow-up, and after-hours response.</p>
+                            </div>
+                            <div class="soft-card rounded-[1.5rem] p-6">
+                                <h3 class="text-2xl">Professional Services</h3>
+                                <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">Client intake, qualification, document routing, and workflow consistency.</p>
+                            </div>
+                            <div class="soft-card rounded-[1.5rem] p-6">
+                                <h3 class="text-2xl">Local Multi-Location Teams</h3>
+                                <p class="mt-3 text-sm leading-relaxed text-[var(--muted)]">Standardized response quality, shared operational rules, and visibility across locations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="process" class="section-fade px-4 py-20">
+                <div class="max-w-7xl mx-auto">
+                    <div class="max-w-3xl">
+                        <div class="eyebrow mb-5">How It Works</div>
+                        <h2 class="text-4xl md:text-5xl">A straightforward path from idea to working system</h2>
+                        <p class="mt-4 text-lg leading-relaxed text-[var(--muted)]">
+                            Owners usually do not need another strategy deck. They need a clear first step, a sensible build plan, and something that actually reduces friction in the business.
+                        </p>
+                    </div>
+
+                    <div class="mt-12 grid gap-6 md:grid-cols-3">
+                        <div class="panel rounded-[1.8rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[var(--accent)] text-xl font-extrabold">1</div>
+                            <h3 class="mt-5 text-2xl">Audit</h3>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We map your current customer journey and internal process to find where time, response speed, and consistency are breaking down.</p>
+                        </div>
+                        <div class="panel rounded-[1.8rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(89,101,75,0.14)] text-[var(--olive)] text-xl font-extrabold">2</div>
+                            <h3 class="mt-5 text-2xl">Build</h3>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We design the workflow, connect the tools, and define where automation handles the work versus where your team should stay in the loop.</p>
+                        </div>
+                        <div class="panel rounded-[1.8rem] p-7">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(47,111,108,0.14)] text-[var(--teal)] text-xl font-extrabold">3</div>
+                            <h3 class="mt-5 text-2xl">Refine</h3>
+                            <p class="mt-4 text-sm leading-relaxed text-[var(--muted)]">We review outcomes, tighten the workflow, and make sure the system supports the way your business actually runs.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-fade px-4 py-20">
+                <div class="max-w-7xl mx-auto">
+                    <div class="panel rounded-[2rem] p-8 md:p-10">
+                        <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+                            <div>
+                                <div class="eyebrow mb-5">Why Trust Us</div>
+                                <h2 class="text-4xl md:text-5xl">Experienced builders, positioned for practical delivery</h2>
+                                <p class="mt-4 text-lg leading-relaxed text-[var(--muted)]">
+                                    We bring enterprise-scale AI and automation experience, but this version frames that experience as an execution advantage for smaller businesses rather than as abstract prestige.
+                                </p>
+                            </div>
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div class="soft-card rounded-[1.5rem] p-5">
+                                    <div class="text-3xl font-extrabold text-[var(--accent)]">Voice AI</div>
+                                    <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">Production experience with customer-facing AI systems, backend infrastructure, and scalable workflows.</p>
+                                </div>
+                                <div class="soft-card rounded-[1.5rem] p-5">
+                                    <div class="text-3xl font-extrabold text-[var(--olive)]">Ops</div>
+                                    <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">Operational and industrial automation background that translates well to repetitive business processes.</p>
+                                </div>
+                                <div class="soft-card rounded-[1.5rem] p-5">
+                                    <div class="text-3xl font-extrabold text-[var(--teal)]">Adoption</div>
+                                    <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">A practical focus on implementation, staff fit, and workflows people will actually use.</p>
+                                </div>
+                                <div class="soft-card rounded-[1.5rem] p-5">
+                                    <div class="text-3xl font-extrabold text-[var(--accent)]">Local</div>
+                                    <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">Houston-rooted positioning for businesses that want a more direct, grounded working relationship.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="team" class="section-fade px-4 py-20 bg-[rgba(255,250,242,0.48)] border-y border-[rgba(113,89,57,0.1)]">
+                <div class="max-w-7xl mx-auto">
+                    <div class="max-w-3xl">
+                        <div class="eyebrow mb-5">Team</div>
+                        <h2 class="text-4xl md:text-5xl">Senior operators and engineers who can connect business needs to real implementation</h2>
+                        <p class="mt-4 text-lg leading-relaxed text-[var(--muted)]">
+                            The team section in this version is still expert-led, but it is written to feel more human and operator-friendly than big-company prestige-driven.
+                        </p>
+                    </div>
+
+                    <div class="mt-12 grid gap-6 md:grid-cols-3">
+                        <article class="soft-card rounded-[1.8rem] p-7">
+                            <img src="dmitry_rosliakov.jpeg" alt="Dmitry Rosliakov" class="h-20 w-20 rounded-full object-cover border-2 border-[rgba(159,79,43,0.22)] shadow-lg" onerror="this.src='https://ui-avatars.com/api/?name=Dmitry+Rosliakov&background=9f4f2b&color=fff'">
+                            <h3 class="mt-5 text-2xl">Dmitry Rosliakov</h3>
+                            <p class="mt-1 text-sm font-bold uppercase tracking-[0.16em] text-[var(--accent)]">AI Strategy & Implementation</p>
+                            <p class="mt-1 text-sm text-[var(--muted)]">Houston, USA</p>
+                            <p class="mt-5 text-sm leading-relaxed text-[var(--muted)]">Works with businesses to turn AI interest into workable systems that improve responsiveness, remove repetitive work, and produce measurable operational gains.</p>
+                        </article>
+
+                        <article class="soft-card rounded-[1.8rem] p-7">
+                            <img src="ilya_rusanen.jpg" alt="Ilya Rusanen" class="h-20 w-20 rounded-full object-cover border-2 border-[rgba(47,111,108,0.22)] shadow-lg" onerror="this.src='https://ui-avatars.com/api/?name=Ilya+Rusanen&background=2f6f6c&color=fff'">
+                            <h3 class="mt-5 text-2xl">Ilya Rusanen</h3>
+                            <p class="mt-1 text-sm font-bold uppercase tracking-[0.16em] text-[var(--teal)]">AI Engineering</p>
+                            <p class="mt-1 text-sm text-[var(--muted)]">Amsterdam, Netherlands</p>
+                            <p class="mt-5 text-sm leading-relaxed text-[var(--muted)]">Builds production-grade AI systems with an emphasis on reliability, clean operational design, and solutions that support daily business workflows rather than complicate them.</p>
+                        </article>
+
+                        <article class="soft-card rounded-[1.8rem] p-7">
+                            <img src="elena_baturina.jpeg" alt="Elena Baturina" class="h-20 w-20 rounded-full object-cover border-2 border-[rgba(89,101,75,0.22)] shadow-lg" onerror="this.src='https://ui-avatars.com/api/?name=Elena+Baturina&background=59654b&color=fff'">
+                            <h3 class="mt-5 text-2xl">Elena Baturina</h3>
+                            <p class="mt-1 text-sm font-bold uppercase tracking-[0.16em] text-[var(--olive)]">Digital Transformation</p>
+                            <p class="mt-1 text-sm text-[var(--muted)]">Houston, USA</p>
+                            <p class="mt-5 text-sm leading-relaxed text-[var(--muted)]">Brings operational leadership across procurement, supply chain, and transformation work, helping teams adopt new systems in a practical and structured way.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="section-fade px-4 py-20">
+                <div class="max-w-5xl mx-auto panel rounded-[2rem] p-8 md:p-12">
+                    <div class="grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+                        <div>
+                            <div class="eyebrow mb-5">Next Step</div>
+                            <h2 class="text-4xl md:text-5xl">See where AI can save time in your business first</h2>
+                            <p class="mt-4 text-lg leading-relaxed text-[var(--muted)]">
+                                In a short call, we can look at your lead flow, customer communication, and internal operations and point out the areas most likely to produce fast wins.
+                            </p>
+                            <div class="mt-8 flex flex-wrap gap-3 text-sm font-semibold text-[var(--muted)]">
+                                <span class="rounded-full bg-[rgba(159,79,43,0.1)] px-4 py-2">No vague AI pitch</span>
+                                <span class="rounded-full bg-[rgba(89,101,75,0.12)] px-4 py-2">Focused on workflow ROI</span>
+                                <span class="rounded-full bg-[rgba(47,111,108,0.12)] px-4 py-2">Built for SMB realities</span>
+                            </div>
+                        </div>
+
+                        <div class="rounded-[1.75rem] bg-[var(--surface-strong)] border border-[rgba(113,89,57,0.1)] p-6">
+                            <div class="space-y-5">
+                                <div class="soft-card rounded-[1.4rem] p-5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(159,79,43,0.12)] text-[var(--accent)]">
+                                            <i data-lucide="phone"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm uppercase tracking-[0.16em] text-[var(--muted)]">Call Directly</div>
+                                            <div class="text-xl font-extrabold">+1 (346) 764-5300</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="soft-card rounded-[1.4rem] p-5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(47,111,108,0.14)] text-[var(--teal)]">
+                                            <i data-lucide="calendar-days"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm uppercase tracking-[0.16em] text-[var(--muted)]">Book a Session</div>
+                                            <div class="text-base font-bold text-[var(--text)]">30-minute AI opportunity audit</div>
+                                        </div>
+                                    </div>
+                                    <a href="https://calendly.com/dmitry-roslyakov/30min" target="_blank" rel="noreferrer" class="primary-btn mt-5 inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-bold">
+                                        Reserve a Time
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="px-4 py-10">
+            <div class="max-w-7xl mx-auto flex flex-col gap-4 border-t border-[rgba(113,89,57,0.12)] pt-6 md:flex-row md:items-center md:justify-between">
+                <div class="text-sm text-[var(--muted)]">© 2026 CapybaraAI Group. Practical AI automation for Houston SMBs.</div>
+                <div class="flex flex-wrap gap-6 text-sm text-[var(--muted)]">
+                    <span>Based in Houston, TX</span>
+                    <a href="#" class="hover:text-[var(--accent)] transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-[var(--accent)] transition">Terms</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const menuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        menuButton.addEventListener("click", () => {
+            const isOpen = !mobileMenu.classList.contains("hidden");
+            mobileMenu.classList.toggle("hidden");
+            menuButton.setAttribute("aria-expanded", String(!isOpen));
+        });
+
+        mobileMenu.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", () => {
+                mobileMenu.classList.add("hidden");
+                menuButton.setAttribute("aria-expanded", "false");
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                }
+            });
+        }, { threshold: 0.18 });
+
+        document.querySelectorAll(".section-fade").forEach((section) => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
